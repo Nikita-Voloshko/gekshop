@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    #'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -133,3 +133,13 @@ AUTH_USER_MODEL = 'authapp.User'
 
 LOGIN_URL = '/auth/login/'
 
+
+DOMAIN_NAME = 'http://127.0.0.1:8000'
+#EMAIL_HOST = 'localhost'
+#EMAIL_PORT = '2525'
+
+
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = 'cf8fa1dbdbe153'
+EMAIL_HOST_PASSWORD = 'a6395610a6b386'
+EMAIL_PORT = '2525'

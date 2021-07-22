@@ -7,10 +7,19 @@ from django.contrib.auth.decorators import login_required
 
 from authapp.forms import loginUser, registerUser, ChangeProfil
 from basket.views import Basket
+from Geekshop import settings
+from django.core.mail import send_mail
 
 
 # Create your views here.
 
+def send_verify_email(user):
+    verify_link = reverse('auth:verify', args=[user.email, user.activation_key])
+    title = f'Активация на сайте пользователя - {user.username}'
+
+    message = f'Для активации вашей учетный записи {user.username} на портале {settings.DOMAIN_NAME}перейдите по ссылки: \n {settings.DOMAIN_NAME}{verify_link}'
+
+    return send_mail(title, message, settings.EMAIL_HOST_USER, fail_silently=False)
 
 def login(request):
     if request.method == "POST":
@@ -29,15 +38,22 @@ def login(request):
 
 
 def register(request):
+    title = 'Регистрация'
     if request.method == "POST":
         form = registerUser(data=request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Вы успешно зарегестрировались!')
-            return HttpResponseRedirect(reverse('auth:login'))
+            user = form.save()
+            if send_verify_email(user):
+                messages.success(request, 'Вы успешно зарегестрировались!')
+                messages.success(request, 'Активируйте акаунт через почту!')
+                return HttpResponseRedirect(reverse('auth:login'))
+            else:
+                messages.error(request, 'Неудалось отправить письмо!!!')
+                return HttpResponseRedirect(reverse('auth:login'))
+
     else:
         form = registerUser()
-    context = {'form': form}
+    context = {'form': form, 'title':title}
     return render(request, 'authapp/register.html', context)
 
 
@@ -59,3 +75,6 @@ def profile(request):
                 'baskets': Basket.objects.filter(user=request.user),
             }
     return render(request, 'authapp/profile.html', context)
+
+def verify(request, email,activation_key):
+    pass

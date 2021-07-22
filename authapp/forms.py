@@ -2,6 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 from django import forms
 
 from authapp.models import User
+import random, hashlib
 
 
 class loginUser(AuthenticationForm):
@@ -32,6 +33,16 @@ class registerUser(UserCreationForm):
         self.fields['password2'].widget.attrs['placeholder'] = 'Подтвердите пароль'
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control py-4'
+
+    def save(self):
+        user = super(registerUser).self.save()
+
+        user.is_active = False
+        salt = hashlib.sha1(random.random().encode('utf8').hexdigest)()[:6]
+        user.activation_key = hashlib.sha1(user.email + salt.encode('utf8').hexdigest)()[:6]
+        user.save()
+        return user
+
 
 
 class ChangeProfil(UserChangeForm):
