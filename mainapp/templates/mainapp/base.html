@@ -39,7 +39,7 @@
                     <a class="nav-link" href="{% url 'products:index' %}">Каталог <i class="fas fa-shopping-bag"></i>
                     </a>
                 </li>
-                {% if user.is_autentificated %}
+                {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'auth:profil' %}">{{ user.username }}
                             <i class="fas fa-user-circle"></i>

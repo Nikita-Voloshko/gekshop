@@ -35,11 +35,11 @@ class registerUser(UserCreationForm):
             field.widget.attrs['class'] = 'form-control py-4'
 
     def save(self):
-        user = super(registerUser).self.save()
+        user = super(registerUser, self).save()
 
         user.is_active = False
-        salt = hashlib.sha1(random.random().encode('utf8').hexdigest)()[:6]
-        user.activation_key = hashlib.sha1(user.email + salt.encode('utf8').hexdigest)()[:6]
+        salt = hashlib.sha1(str(random.random()).encode(encoding='UTF-8')).hexdigest()[:6]
+        user.activation_key = hashlib.sha1(str(user.email + salt).encode(encoding='UTF-8')).hexdigest()[:6]
         user.save()
         return user
 
@@ -59,3 +59,5 @@ class ChangeProfil(UserChangeForm):
         self.fields['username'].widget.attrs['readonly'] = True
         self.fields['email'].widget.attrs['readonly'] = True
         self.fields['avatar'].widget.attrs['class'] = 'custom-file-input'
+        self.fields['first_name'].widget.attrs['readonly'] = False
+        self.fields['last_name'].widget.attrs['readonly'] = False

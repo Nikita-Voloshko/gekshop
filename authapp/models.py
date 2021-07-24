@@ -11,13 +11,14 @@ now = datetime.now()
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='users_avatar', blank=True)
     age = models.PositiveSmallIntegerField(verbose_name='Возраст', blank=True, null=True)
+    email = models.EmailField(('email address'), unique=True)
     is_delet = models.BooleanField(default=False)
     activation_key = models.CharField(max_length=128, blank=True)
     activation_key_expires = models.DateTimeField(default=(now + timedelta(hours=48)))
 
     def is_activation_key_expires(self):
         if now <= self.activation_key_expires:
-            return False
+           return False
 
         return True
 

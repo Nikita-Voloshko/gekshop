@@ -3,9 +3,11 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth
 from django.urls import reverse
 from django.contrib import messages
+
 from django.contrib.auth.decorators import login_required
 
 from authapp.forms import loginUser, registerUser, ChangeProfil
+from authapp.models import User
 from basket.views import Basket
 from Geekshop import settings
 from django.core.mail import send_mail
@@ -19,7 +21,7 @@ def send_verify_email(user):
 
     message = f'Для активации вашей учетный записи {user.username} на портале {settings.DOMAIN_NAME}перейдите по ссылки: \n {settings.DOMAIN_NAME}{verify_link}'
 
-    return send_mail(title, message, settings.EMAIL_HOST_USER, fail_silently=False)
+    return send_mail(title, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
 
 def login(request):
     if request.method == "POST":
@@ -77,4 +79,13 @@ def profile(request):
     return render(request, 'authapp/profile.html', context)
 
 def verify(request, email,activation_key):
-    pass
+    user = User.objects.get(email=email)
+    if user.activation_key == activation_key :
+        user.is_active = True
+        user.save()
+        auth.login(request, user)
+        return render(request, 'authapp/verify.html')
+    else:
+        print(f'Ошибка активации - {user.username}')
+        return render(request, 'authapp/login.html')
+
