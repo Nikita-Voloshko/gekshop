@@ -9,9 +9,12 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+import json
 import os
 
+#import environ
+#env = environ.Env()
+#environ.Env.read_env()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,10 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'mainapp',
     'authapp',
     'basket',
     'adminapp',
+
+    'social_django'
 ]
 
 MIDDLEWARE = [
@@ -143,3 +149,18 @@ EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST_USER = 'cf8fa1dbdbe153'
 EMAIL_HOST_PASSWORD = 'a6395610a6b386'
 EMAIL_PORT = '2525'
+
+#vk_id = 7911404
+#vk_Secure_key = 'GmskyELoFD5kgoZDiLiy'
+#vk_Service_token = '159bfc2a159bfc2a159bfc2a0c15e34bc61159b159bfc2a75665dd1efeaa00749e40ad0'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend'
+    'social_core.backends.vk.VKOAuth2'
+)
+with open('Geekshop/vk.json', 'r')as file:
+    VK = json.load(file)
+
+SOCIAL_AUTH_CORE_VK_VKOAUTH2_ID = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_ID']
+SOCIAL_AUTH_CORE_VK_VKOAUTH2_KEY = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_KEY']
+SOCIAL_AUTH_CORE_VK_VKOAUTH2_SECRET = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_SECRET']
