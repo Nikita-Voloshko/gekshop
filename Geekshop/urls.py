@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from mainapp.views import index
+from social_django import urls
 
 
 urlpatterns = [
@@ -27,9 +28,5 @@ urlpatterns = [
     path('auth/', include('authapp.urls', namespace='auth')),
     path('baskets/', include('basket.urls', namespace='baskets')),
     path('admin-staff/', include('adminapp.urls', namespace='admins')),
-
+    path('vk/', include('social_django.urls', namespace='social'))
 ]
-'''
-
-
-'''
