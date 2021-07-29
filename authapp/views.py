@@ -4,9 +4,8 @@ from django.contrib import auth
 from django.urls import reverse
 from django.contrib import messages
 
-from django.contrib.auth.decorators import login_required
 
-from authapp.forms import loginUser, registerUser, ChangeProfil
+from authapp.forms import loginUser, registerUser, ChangeProfil, ProfileChangeProfil
 from authapp.models import User
 from basket.views import Basket
 from Geekshop import settings
@@ -23,13 +22,14 @@ def send_verify_email(user):
 
     return send_mail(title, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
 
+
 def login(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = loginUser(data=request.POST)
-        if form.is_valid():
+        if form.is_valid:
             username = request.POST['username']
             password = request.POST['password']
-            user = auth.authenticate(username=username, password=password)
+            user = auth.authenticate(request, username=username, password=password)
             if user and user.is_active:
                 auth.login(request, user)
                 return HttpResponseRedirect(reverse('index'))
@@ -67,20 +67,24 @@ def logout(request):
 def profile(request):
     if request.method == 'POST':
         form = ChangeProfil(data=request.POST, files=request.FILES, instance=request.user)
-        if form.is_valid:
+        profile_form = ProfileChangeProfil(data=request.POST, instance=request.userprofile)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
+            profile_form.save()
             return HttpResponseRedirect(reverse('auth:profil'))
     else:
         form = ChangeProfil(instance=request.user)
+        profile_form = ProfileChangeProfil(instance=request.userprofile)
     context = {
                 'form': form,
                 'baskets': Basket.objects.filter(user=request.user),
+                'profile_form': profile_form,
             }
     return render(request, 'authapp/profile.html', context)
 
-def verify(request, email,activation_key):
+def verify(request, email, activation_key):
     user = User.objects.get(email=email)
-    if user.activation_key == activation_key :
+    if user.activation_key == activation_key:
         user.is_active = True
         user.save()
         auth.login(request, user)

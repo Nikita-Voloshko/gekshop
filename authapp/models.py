@@ -1,8 +1,10 @@
-
+from django.db.models import Model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.dispatch import receiver
 from datetime import timedelta
 from datetime import datetime
+from django.db.models.signals import post_save
 
 now = datetime.now()
 
@@ -11,32 +13,57 @@ now = datetime.now()
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='users_avatar', blank=True)
     age = models.PositiveSmallIntegerField(verbose_name='Возраст', blank=True, null=True)
-    email = models.EmailField(('email address'), unique=False)
+    email = models.EmailField(verbose_name='email address', unique=False, blank=True, null=True)
     is_delet = models.BooleanField(default=False)
     activation_key = models.CharField(max_length=128, blank=True)
-    activation_key_expires = models.DateTimeField(default=(now + timedelta(hours=48)))
+'''    activation_key_expires = models.DateTimeField(default=(now + timedelta(hours=48)))
 
     def is_activation_key_expires(self):
         if now <= self.activation_key_expires:
-           return False
+            return False
 
-        return True
-
-
+        return True'''
 
 
-'''from django.contrib.auth.models import AbstractUser
-import django.contrib.auth.models
-import django.contrib.auth.validators
-from django.db import migrations, models
-import django.utils.timezone
+class UserProfile(Model):
+    Male = 'М'
+    FEMALE = 'Ж'
 
-# Create your models here.
+    ChoseGender = ((Male, 'М'), (FEMALE, 'Ж'))
+    user = models.OneToOneField(
+        User,
+        unique=True,
+        null=False,
+        db_index=True,
+        on_delete=models.CASCADE
+    )
 
-class User(AbstractUser):
-    avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
-    age = models.PositiveSmallIntegerField(default=0)
-    first_name = models.CharField(max_length=30, default='Введите имя пользователя')
-    last_name = models.CharField(max_length=150, default='Введите фамилию пользователя')
-    username = models.CharField(unique=True, max_length=64)
-    email = models.EmailField(blank=True, max_length=254, verbose_name='email address', null=True)'''
+    tagline = models.CharField(
+        verbose_name='теги',
+        max_length=128,
+        blank=True
+    )
+
+    about_me = models.CharField(
+        verbose_name='О себе',
+        max_length=512,
+        blank=True
+    )
+
+    chosegender = models.CharField(
+        verbose_name='имя',
+        max_length=1,
+        choices=ChoseGender,
+        blank=True
+    )
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance,created, **kwargs):
+        if created:
+            UserProfile.objects.created(user=instance)
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, **kwargs):
+        instance.UserProfile.save()
+
+

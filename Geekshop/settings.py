@@ -45,10 +45,9 @@ INSTALLED_APPS = [
     'authapp',
     'basket',
     'adminapp',
-
-    'social_django'
+    'social_django',
 ]
-
+''''''
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -57,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'Geekshop.urls'
@@ -72,13 +72,18 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'Geekshop.wsgi.application'
+ALLOWED_HOSTS = ['127.0.0.1']
 
+SOCIAL_AUTH_VK_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -150,17 +155,20 @@ EMAIL_HOST_USER = 'cf8fa1dbdbe153'
 EMAIL_HOST_PASSWORD = 'a6395610a6b386'
 EMAIL_PORT = '2525'
 
-#vk_id = 7911404
-#vk_Secure_key = 'GmskyELoFD5kgoZDiLiy'
-#vk_Service_token = '159bfc2a159bfc2a159bfc2a0c15e34bc61159b159bfc2a75665dd1efeaa00749e40ad0'
+#AUTHENTICATION_BACKENDS = (
+#    'social_core.backends.google.GoogleOAuth2',
+#    'django.contrib.auth.backends.ModelBackend',
+#)
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend'
     'social_core.backends.vk.VKOAuth2'
+    'django.contrib.auth.backends.ModelBackend'
 )
 with open('Geekshop/vk.json', 'r')as file:
     VK = json.load(file)
 
-SOCIAL_AUTH_CORE_VK_VKOAUTH2_ID = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_ID']
-SOCIAL_AUTH_CORE_VK_VKOAUTH2_KEY = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_KEY']
-SOCIAL_AUTH_CORE_VK_VKOAUTH2_SECRET = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_SECRET']
+
+SOCIAL_AUTH_CORE_VK_VKOAUTH2_KEY = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_ID']
+SOCIAL_AUTH_CORE_VK_VKOAUTH2_SECRET = VK['SOCIAL_AUTH_CORE_VK_VKOAUTH2_KEY']
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'

@@ -45,9 +45,13 @@ class UserUpdateView(UpdateView):
         return super(UserUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(UserUpdateView, self).get_context_data(**kwargs)
-        context['title'] = 'GeekShop - Редактирование пользователя'
-        return context
+        self.object = self.get_object()
+        self.object.is_active = False
+        self.object.delete()
+        return HttpResponseRedirect(self.get_success_url())
+        #context = super(UserUpdateView, self).get_context_data(**kwargs)
+        #context['title'] = 'GeekShop - Редактирование пользователя'
+        #return context
 
 
 class UserDeleteView(DeleteView):
@@ -62,5 +66,6 @@ class UserDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.is_active = False
+        #self.object.delete()
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
