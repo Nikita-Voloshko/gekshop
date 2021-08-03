@@ -19,11 +19,14 @@ def basket_add(request, product_id=None):
         basket = Basket(user=request.user, product=product)
         basket.quantity = + 1
         basket.save
+
+        print(basket)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         basket = baskets.first
         basket.quantity = + 1
         basket.save
+        print(basket)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @login_required
