@@ -46,8 +46,9 @@ INSTALLED_APPS = [
     'basket',
     'adminapp',
     'social_django',
+    'orderapp'
 ]
-''''''
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
